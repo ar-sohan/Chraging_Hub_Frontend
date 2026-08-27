@@ -1,5 +1,11 @@
+import Header from "../components/Header";
+
 export default function Payments() {
   return (
-    <h1>Payments</h1>
+    <>
+      <div className="m-5">
+        <Header></Header>
+      </div>
+    </>
   );
 }

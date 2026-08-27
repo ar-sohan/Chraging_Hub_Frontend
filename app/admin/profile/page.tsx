@@ -1,0 +1,5 @@
+export default function profile(){
+    <>
+        <h1>This is your profile page</h1>
+    </>
+}
