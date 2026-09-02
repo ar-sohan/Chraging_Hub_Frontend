@@ -10,7 +10,7 @@ export default function AdminHome() {
                     <p className="text-lg text-gray-600">Manage your application settings and user accounts.</p>
                     <div>
                         <Link href="/admin/login"><button className='p-3 rounded-xl border-blue-700 border-2 hover:bg-blue-600 hover:text-white font-bold mr-5'>Login</button></Link>
-                        <Link href="/admin/registration"><button className='p-3 rounded-xl border-blue-700 border-2 hover:bg-blue-600 hover:text-white font-bold'>Registration</button></Link>
+                        <Link href="/admin/createAdmin"><button className='p-3 rounded-xl border-blue-700 border-2 hover:bg-blue-600 hover:text-white font-bold'>Registration</button></Link>
                     </div>
                 </div>
             </div>
