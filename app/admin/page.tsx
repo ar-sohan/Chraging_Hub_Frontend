@@ -4,6 +4,7 @@ import Header from './components/Header';
 export default function AdminHome() {
     return (
         <>
+            <Header></Header>
             <div className='m-10'>
                 <div className="mt-16 flex flex-col items-center justify-center gap-5">
                     <h1 className="text-3xl font-bold">Welcome to the Admin Panel</h1>
