@@ -52,21 +52,22 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex justify-between items-center gap-5">
-        <label className="text-xl font-semibold" htmlFor="email">Email</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="email" name="email" id="email" placeholder="example@example.com" />
-      </div>
-      <br />
-      <div className="flex justify-between items-center gap-5">
-        <label className="text-xl font-semibold" htmlFor="password">Password</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="password" name="password" id="password" placeholder="Password" />
-      </div>
-      <br />
-      <div className="flex justify-center">
-        <button className="btn bg-indigo-500 text-white p-3 rounded-xl" type="submit">Login</button>
-      </div>
-      <FormMessage message={message} isError={isError} />
+    <form noValidate onSubmit={handleSubmit}>
+      <fieldset className="dui-fieldset w-full rounded-box border border-base-300 bg-base-200 p-4">
+        <legend className="dui-fieldset-legend">Account details</legend>
+        <label className="dui-label" htmlFor="email">Email</label>
+        <input className="dui-input w-full" type="email" name="email" id="email"
+          autoComplete="email" placeholder="example@example.com" />
+        <label className="dui-label mt-3" htmlFor="password">Password</label>
+        <input className="dui-input w-full" type="password" name="password" id="password"
+          autoComplete="current-password" placeholder="Enter your password" />
+        <div className="dui-card-actions mt-5">
+          <button className="dui-btn dui-btn-primary w-full" type="submit">Login</button>
+        </div>
+        <FormMessage message={message} isError={isError} />
+      </fieldset>
     </form>
   );
 }
+
+

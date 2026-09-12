@@ -57,57 +57,44 @@ export default function RegistrationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="fullName">Name</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="text" name="fullName" id="fullName" placeholder="Name" />
-      </div>
-      <br />
+    <form noValidate onSubmit={handleSubmit}>
+      <fieldset className="dui-fieldset w-full rounded-box border border-base-300 bg-base-200 p-4 sm:p-5">
+        <legend className="dui-fieldset-legend">Personal details</legend>
+        <label className="dui-label" htmlFor="fullName">Full name</label>
+        <input className="dui-input w-full" type="text" name="fullName" id="fullName" placeholder="Your full name" autoComplete="name" />
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="email">Email</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="email" name="email" id="email" placeholder="example@example.com" />
-      </div>
-      <br />
+        <label className="dui-label mt-3" htmlFor="email">Email</label>
+        <input className="dui-input w-full" type="email" name="email" id="email" placeholder="example@example.com" autoComplete="email" />
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="phone">Phone</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="text" name="phone" id="phone" placeholder="01XXXXXXXXX" />
-      </div>
-      <br />
+        <label className="dui-label mt-3" htmlFor="phone">Phone</label>
+        <input className="dui-input w-full" type="tel" name="phone" id="phone" placeholder="01XXXXXXXXX" autoComplete="tel" />
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="age">Age</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="number" name="age" id="age" placeholder="Age" />
-      </div>
-      <br />
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid gap-2">
+            <label className="dui-label" htmlFor="age">Age</label>
+            <input className="dui-input w-full" type="number" name="age" id="age" placeholder="Your age" />
+          </div>
+          <div className="grid gap-2">
+            <label className="dui-label" htmlFor="gender">Gender</label>
+            <select className="dui-select w-full" name="gender" id="gender" defaultValue="">
+              <option value="" disabled>Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+        </div>
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="gender">Gender</label>
-        <select className="my-4 border-2 border-indigo-400 p-2 rounded" name="gender" id="gender" defaultValue="">
-          <option value="">Select</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-      </div>
-      <br />
+        <label className="dui-label mt-3" htmlFor="password">Password</label>
+        <input className="dui-input w-full" type="password" name="password" id="password" placeholder="Create a password" autoComplete="new-password" />
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="password">Password</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="password" name="password" id="password" placeholder="Password" />
-      </div>
-      <br />
+        <label className="dui-label mt-3" htmlFor="confirmPassword">Confirm password</label>
+        <input className="dui-input w-full" type="password" name="confirmPassword" id="confirmPassword" placeholder="Re-enter your password" autoComplete="new-password" />
 
-      <div className="flex justify-between items-center">
-        <label className="text-xl font-semibold mr-4" htmlFor="confirmPassword">Confirm Password</label>
-        <input className="my-4 border-2 border-indigo-400 p-2 rounded" type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" />
-      </div>
-      <br />
-
-      <div className="flex justify-center">
-        <button className="btn bg-indigo-500 text-white p-3 rounded-xl" type="submit">Register</button>
-      </div>
-      <FormMessage message={message} isError={isError} />
+        <div className="dui-card-actions mt-5">
+          <button className="dui-btn dui-btn-primary w-full" type="submit">Create account</button>
+        </div>
+        <FormMessage message={message} isError={isError} />
+      </fieldset>
     </form>
   );
 }

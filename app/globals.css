@@ -1,1 +1,132 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+  root: "#user-header";
+  prefix: "dui-";
+  include: navbar, menu, button, card, input, fieldset, label, select, stat, table, badge, alert, loading, skeleton, footer;
+}
+
+
+
+/* Shared natural-green palette for the user header and account forms. */
+[data-theme="light"].ev-green {
+  --color-base-100: #ffffff;
+  --color-base-200: #f7f9fb;
+  --color-base-300: #dce5ee;
+  --color-base-content: #10241d;
+  --color-primary: #009b70;
+  --color-primary-content: #ffffff;
+  --color-secondary: #527f56;
+  --color-secondary-content: #ffffff;
+  --color-accent: #c6e8b8;
+  --color-accent-content: #10241d;
+  --color-neutral: #002f25;
+  --color-neutral-content: #ffffff;
+}
+
+
+.ev-green {
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+}
+.ev-green .dui-btn-primary {
+  box-shadow: none;
+}
+.ev-green .dui-input, .ev-green .dui-select {
+  background-color: var(--color-base-100);
+}
+.ev-green .dui-table th {
+  color: #52645d;
+  background: #f0f5f2;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ev-green .dui-table td, .ev-green .dui-table th {
+  padding: 1rem 1.25rem;
+}
+.ev-green .dui-table tbody tr:hover {
+  background: #f7faf8;
+}
+.ev-green :focus-visible {
+  outline-color: #009b70;
+  outline-offset: 3px;
+}
+
+/* User portal design tokens and consistent interaction states. */
+.ev-green {
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  --color-base-300: #e2eae6;
+}
+.ev-green .dui-card, .ev-green .dui-stat {
+  box-shadow: 0 2px 8px rgb(16 36 29 / 3%);
+}
+.ev-green .dui-btn {
+  font-weight: 600;
+  text-transform: none;
+}
+.ev-green .dui-btn-primary {
+  background: #00865f;
+  border-color: #00865f;
+}
+.ev-green .dui-btn-primary:hover:not(:disabled) {
+  background: #006e4f;
+  border-color: #006e4f;
+}
+.ev-green .dui-table tbody tr {
+  border-color: #edf1ef;
+}
+.ev-green .dui-menu-active {
+  background: #e6f5ed;
+  color: #006e4f;
+}
+.ev-green .dui-input:focus, .ev-green .dui-select:focus {
+  border-color: #009b70;
+}
+.ev-green .dui-table td {
+  font-size: 0.875rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ev-green *, .ev-green *::before, .ev-green *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+
+/* A single visual language across the driver portal. */
+[data-theme="light"].ev-green {
+  --color-base-200: #f8faf6;
+  --color-base-300: #dfe7df;
+  --color-base-content: #111b29;
+  --color-primary: #00815d;
+  --color-neutral: #002f25;
+}
+.ev-green .dui-btn-primary {
+  border-radius: 999px;
+  background: #002f25;
+  border-color: #002f25;
+  padding-inline: 1.4rem;
+}
+.ev-green .dui-btn-primary:hover:not(:disabled) {
+  background: #005541;
+  border-color: #005541;
+}
+.ev-green .dui-fieldset {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.ev-green .dui-fieldset-legend {
+  font-size: 0.8rem;
+  color: #526575;
+}
+.ev-green .dui-stat-value {
+  color: #00815d;
+}
+.ev-green .dui-card {
+  border-radius: 1.25rem;
+}
+.ev-green .dui-input, .ev-green .dui-select {
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+}
