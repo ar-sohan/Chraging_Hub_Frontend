@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import PageTitle from '../../components/PageTitle';
 import StatusBadge from '../../components/StatusBadge';
-import TechnicianLayout from '../../components/TechnicianLayout';
+import TechnicianAppLayout from '../../components/TechnicianAppLayout';
 import { getTechnician } from '../../lib/api';
 import { TechnicianProfile } from '../../lib/types';
 
@@ -31,7 +31,7 @@ export default function TechnicianProfilePage() {
   }, [params.id]);
 
   return (
-    <TechnicianLayout>
+    <TechnicianAppLayout>
       <section className="mx-auto max-w-4xl px-5 py-12">
         <PageTitle title="Technician profile" description="Dynamic route: this page loads a profile using its ID from the URL." />
         {error && <p className="rounded bg-red-50 p-4 text-red-700">{error}</p>}
@@ -52,7 +52,7 @@ export default function TechnicianProfilePage() {
           </div>
         )}
       </section>
-    </TechnicianLayout>
+    </TechnicianAppLayout>
   );
 }
 

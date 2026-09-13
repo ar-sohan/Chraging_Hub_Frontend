@@ -1,18 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import axios from 'axios';
 import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import PageTitle from '../components/PageTitle';
 import TechnicianLayout from '../components/TechnicianLayout';
 import { loginSchema } from '../lib/schemas';
+import { loginTechnician } from '../lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const router = useRouter();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = loginSchema.safeParse({ email, password });
 
@@ -22,8 +26,16 @@ export default function LoginPage() {
       return;
     }
 
-    setError('');
-    setMessage('Your login form is valid. A technician sign-in API is required before this form can authenticate an account.');
+    try {
+      const data = await loginTechnician(result.data);
+      localStorage.setItem('technicianToken', data.accessToken);
+      setError('');
+      setMessage('Login successful.');
+      router.push('/technicians/dashboard');
+    } catch (requestError) {
+      setMessage('');
+      setError(axios.isAxiosError(requestError) ? requestError.response?.data?.message ?? 'Login failed' : 'Login failed');
+    }
   }
 
   return (
