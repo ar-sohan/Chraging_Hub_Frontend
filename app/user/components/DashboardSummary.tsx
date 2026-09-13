@@ -1,5 +1,6 @@
 "use client";
 import EVIllustration from "./EVIllustration";
+import SummaryIllustration from "./SummaryIllustration";
 import DashboardCharts from "./DashboardCharts";
 import DashboardFeatureCards from "./DashboardFeatureCards";
 
@@ -98,10 +99,14 @@ export default function DashboardSummary({ name, onUnauthorized }: {
               { label: "My Bookings", value: data.bookings.length, href: "/user/bookings" },
               { label: "Pending Payments", value: pending.length, href: "/user/bookings" },
               { label: "Confirmed Bookings", value: data.bookings.filter(item => item.status === "confirmed").length, href: "/user/bookings" },
-            ].map(card => <Link href={card.href} key={card.label} className="dui-stat rounded-2xl border border-base-300 bg-base-100 p-6 transition-colors hover:border-emerald-300">
-              <div className="flex items-center justify-between gap-3"><p className="dui-stat-title text-sm">{card.label}</p><span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">↗</span></div>
-              <p className="dui-stat-value mt-3 text-3xl font-semibold tracking-tight text-base-content">{card.value}</p>
-            </Link>)}
+            ].map(card => <article key={card.label} className="dui-stat illustrated-summary rounded-2xl border border-base-300 bg-base-100 p-6 transition-colors hover:border-emerald-300">
+              <div className="summary-copy">
+                <p className="dui-stat-title text-sm">{card.label}</p>
+                <p className="dui-stat-value mt-3 text-3xl font-semibold tracking-tight text-base-content">{card.value}</p>
+              </div>
+              <SummaryIllustration kind={card.label} />
+              <Link className="dui-btn dui-btn-sm summary-action" href={card.label === "Pending Payments" && pending.length ? "/user/payments/" + pending[0].id : card.href}>{card.label === "Available Slots" ? "Book a slot" : card.label === "Pending Payments" ? "View payments" : "View bookings"} <span aria-hidden="true">↗</span></Link>
+            </article>)}
           </div>
 
 
@@ -138,6 +143,8 @@ export default function DashboardSummary({ name, onUnauthorized }: {
     </section>
   );
 }
+
+
 
 
 

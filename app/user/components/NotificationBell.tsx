@@ -102,11 +102,12 @@ export default function NotificationBell({ userId, onUnauthorized }: {
   return (
     <details className="relative">
       <summary aria-label={"Notifications, " + unread + " unread"}
-        className="relative flex size-12 cursor-pointer list-none items-center justify-center rounded-lg text-base-content/60 hover:bg-gray-100 [&::-webkit-details-marker]:hidden">
+        className="notification-nav relative flex size-12 cursor-pointer list-none items-center justify-center rounded-lg text-base-content/60 hover:bg-gray-100 [&::-webkit-details-marker]:hidden">
         <svg className="size-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
         </svg>
         {unread > 0 && <span className="dui-badge dui-badge-primary dui-badge-sm absolute -right-1 top-0">{unread}</span>}
+        <span className="notification-nav-label">Notifications</span>
       </summary>
       <div className="absolute right-0 z-50 mt-3 max-h-[70vh] w-80 max-w-[85vw] overflow-y-auto rounded-2xl border border-base-300 bg-base-100 p-4 shadow-xl">
         <h2 className="font-semibold">Notifications</h2>
@@ -129,6 +130,7 @@ export default function NotificationBell({ userId, onUnauthorized }: {
     </details>
   );
 }
+
 
 
 

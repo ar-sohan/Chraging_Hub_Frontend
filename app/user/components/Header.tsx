@@ -81,20 +81,21 @@ export default function Header({ user, onLogout }: HeaderProps) {
             <UserDock userId={user.id} />
             <NotificationBell key={user.id} userId={user.id} onUnauthorized={onLogout} />
             <button type="button" onClick={onLogout}
-              className="dui-btn dui-btn-ghost dui-btn-sm hidden sm:inline-flex">Logout</button>
+              className="dui-btn dui-btn-ghost dui-btn-sm hidden sm:inline-flex"><svg className="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h13" /></svg><span>Logout</span></button>
           </>}
         </div>
 
         {menuOpen && <nav id="user-navigation-menu" className="absolute left-4 top-full z-40 mt-2 w-60 rounded-xl border border-gray-200 bg-white p-2 shadow-lg sm:left-10" aria-label="User navigation">
           <ul className="dui-menu w-full gap-1">
             {menuLinks}
-            {user && <li className="sm:hidden"><button onClick={onLogout}>Logout</button></li>}
+            {user && <li className="sm:hidden"><button onClick={onLogout}><svg className="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h13" /></svg><span>Logout</span></button></li>}
           </ul>
         </nav>}
       </div>
     </header>
   );
 }
+
 
 
 

@@ -346,3 +346,41 @@
  .booking-mobile-cards { display: grid; gap: 12px; }
  .bookings-page > a[href="/user/bookings/new"] { float: none; margin-top: 0; }
 }
+
+.driver-dashboard .illustrated-summary { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 20px 16px; min-height: 130px; background: linear-gradient(120deg, #fff 55%, #f7faf2); }
+.illustrated-summary .summary-copy { min-width: 0; }
+.driver-dashboard .illustrated-summary .dui-stat-value { font-size: clamp(22px, 2.2vw, 29px); white-space: nowrap; }
+.summary-illustration { width: 74px; height: 80px; flex-shrink: 0; }
+@media (max-width: 480px) {
+ .driver-dashboard .illustrated-summary { padding: 14px 10px; gap: 2px; }
+ .summary-illustration { width: 42px; height: 58px; }
+ .driver-dashboard .illustrated-summary .dui-stat-title { font-size: 10px; white-space: normal; }
+ .driver-dashboard .illustrated-summary .dui-stat-value { font-size: 19px; }
+}
+
+.driver-dashboard .illustrated-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.illustrated-summary .summary-action { grid-column: 1 / -1; margin-top: 12px; width: 100%; background: #edf5e9; border: 1px solid #d6e7cd; color: #23583a; justify-content: space-between; }
+.illustrated-summary .summary-action:hover { background: #dfeeda; }
+.user-header-dock.dui-dock { gap: 8px; }
+.user-header-dock.dui-dock > a { background: #f3f4f6; border-radius: 11px; padding-top: 3px; padding-bottom: 6px; }
+.user-header-dock.dui-dock > a:hover { background: #e9efea; }
+.user-header-dock.dui-dock > a[aria-current="page"] { background: #e8f3e9; }
+.notification-nav { flex-direction: column; gap: 2px; width: 76px; height: 56px; background: #f3f4f6; padding-bottom: 6px; }
+.notification-nav-label { font-size: 10px; }
+@media (max-width: 480px) {
+ .user-header-dock.dui-dock { gap: 4px; }
+ .notification-nav { width: 68px; }
+}
+
+.user-header-dock.dui-dock > a,
+.user-header-dock.dui-dock > a[aria-current="page"],
+.notification-nav { background: transparent; }
+@media (hover: hover) {
+  .user-header-dock.dui-dock > a:hover,
+  .notification-nav:hover { background: #f3f4f6; }
+}
+.booking-summary-art > div { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.booking-summary-art .summary-illustration { width: 76px; height: 80px; }
+@media (max-width: 600px) {
+ .booking-summary-art .summary-illustration { width: 60px; height: 64px; }
+}

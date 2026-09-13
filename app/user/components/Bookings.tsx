@@ -1,5 +1,6 @@
 "use client";
 import BookingList from "./BookingList";
+import SummaryIllustration from "./SummaryIllustration";
 
 import PageIntro from "./PageIntro";
 
@@ -199,10 +200,10 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
         href={createMode ? "/user/bookings" : "/user/bookings/new"}>
         {createMode ? "View my bookings" : "Book a slot"}
       </Link>
-      {!createMode && !loading && !error && <div className="portal-summary">
-        <div><span>All bookings</span><strong>{bookings.length}</strong></div>
-        <div><span>Awaiting payment</span><strong>{bookings.filter(item => item.status === "pending_payment").length}</strong></div>
-        <div><span>Completed sessions</span><strong>{bookings.filter(item => item.status === "completed").length}</strong></div>
+      {!createMode && !loading && !error && <div className="portal-summary booking-summary-art">
+        <div><div><span>All bookings</span><strong>{bookings.length}</strong></div><SummaryIllustration kind="My Bookings" /></div>
+        <div><div><span>Awaiting payment</span><strong>{bookings.filter(item => item.status === "pending_payment").length}</strong></div><SummaryIllustration kind="Pending Payments" /></div>
+        <div><div><span>Completed sessions</span><strong>{bookings.filter(item => item.status === "completed").length}</strong></div><SummaryIllustration kind="Confirmed Bookings" /></div>
       </div>}
       {createMode ? (
         <form noValidate onSubmit={create} className="dui-card mt-6 max-w-5xl border border-base-300 bg-base-100 p-5 shadow-sm sm:p-7">
@@ -293,6 +294,7 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     </section>
   );
 }
+
 
 
 
