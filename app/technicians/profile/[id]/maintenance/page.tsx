@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import PageTitle from '../../../components/PageTitle';
-import TechnicianLayout from '../../../components/TechnicianLayout';
+import TechnicianAppLayout from '../../../components/TechnicianAppLayout';
 import { createMaintenanceTask, getMaintenanceTasks } from '../../../lib/api';
 import { maintenanceSchema } from '../../../lib/schemas';
 import { MaintenanceTask } from '../../../lib/types';
 
-const initialForm = { category: 'Charging', stationId: '', deviceId: '', deviceType: '', issue: '', action: '', notes: '', maintenanceDate: '' };
+const initialForm = { category: 'Charging', stationId: '', stationLocation: '', deviceId: '', deviceType: '', issue: '', action: '', notes: '', maintenanceDate: '' };
 
 export default function MaintenancePage() {
   const params = useParams<{ id: string }>();
@@ -50,13 +50,14 @@ export default function MaintenancePage() {
   }
 
   return (
-    <TechnicianLayout>
+    <TechnicianAppLayout>
       <section className="mx-auto max-w-5xl px-5 py-12">
         <PageTitle title="Maintenance tasks" description="Create and view charging or hardware maintenance records for this technician." />
         <Link href={`/technicians/profile/${params.id}`} className="mb-6 inline-block text-sm font-semibold text-blue-700 hover:underline">Back to profile</Link>
         <form noValidate onSubmit={handleSubmit} className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
           <SelectField label="Category" name="category" value={form.category} onChange={(value) => setForm({ ...form, category: value })} />
           <TextField label="Station ID" name="stationId" value={form.stationId} onChange={(value) => setForm({ ...form, stationId: value })} />
+          <TextField label="Station location / address" name="stationLocation" value={form.stationLocation} onChange={(value) => setForm({ ...form, stationLocation: value })} />
           <TextField label="Device ID (optional)" name="deviceId" value={form.deviceId} onChange={(value) => setForm({ ...form, deviceId: value })} />
           <TextField label="Device type (optional)" name="deviceType" value={form.deviceType} onChange={(value) => setForm({ ...form, deviceType: value })} />
           <TextField label="Issue" name="issue" value={form.issue} onChange={(value) => setForm({ ...form, issue: value })} />
@@ -67,10 +68,10 @@ export default function MaintenancePage() {
           <button disabled={isSubmitting} type="submit" className="md:col-span-2 rounded bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:bg-slate-400">{isSubmitting ? 'Saving...' : 'Save maintenance task'}</button>
         </form>
         <div className="mt-10"><h2 className="text-xl font-bold">Saved tasks</h2>
-          {tasks.length === 0 ? <p className="mt-3 text-slate-600">No maintenance task has been recorded yet.</p> : <div className="mt-4 grid gap-4 md:grid-cols-2">{tasks.map((task) => <article key={task.id} className="rounded-lg border border-slate-200 bg-white p-5"><div className="flex justify-between gap-2"><h3 className="font-bold">{task.stationId}</h3><span className="text-sm text-slate-500">{task.status}</span></div><p className="mt-2 text-sm text-slate-600">{task.category} - {task.issue}</p><p className="mt-2 text-sm text-slate-500">Date: {task.maintenanceDate}</p></article>)}</div>}
+          {tasks.length === 0 ? <p className="mt-3 text-slate-600">No maintenance task has been recorded yet.</p> : <div className="mt-4 grid gap-4 md:grid-cols-2">{tasks.map((task) => <Link key={task.id} href={`/technicians/reports/maintenance/${task.id}`} className="block rounded-lg border border-slate-200 bg-white p-5 hover:border-blue-600"><div className="flex justify-between gap-2"><h3 className="font-bold">{task.stationId}</h3><span className="text-sm text-slate-500">{task.status}</span></div><p className="mt-2 text-sm text-slate-600">{task.category} - {task.issue}</p><p className="mt-2 text-sm text-slate-500">Date: {task.maintenanceDate}</p></Link>)}</div>}
         </div>
       </section>
-    </TechnicianLayout>
+    </TechnicianAppLayout>
   );
 }
 

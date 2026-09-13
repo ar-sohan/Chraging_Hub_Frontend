@@ -10,7 +10,7 @@ import { registrationSchema } from '../lib/schemas';
 
 const initialForm = {
   fullName: '', email: '', phone: '', location: '', country: '', experience: '',
-  primarySpecialisation: '', certification: '', socialMediaLink: '', specialisations: '',
+  primarySpecialisation: '', certification: '', socialMediaLink: '', specialisations: '', password: '',
 };
 
 export default function RegisterPage() {
@@ -35,8 +35,8 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     setError('');
     try {
-      const technician = await createTechnician(result.data);
-      router.push(`/technicians/profile/${technician.id}`);
+      await createTechnician(result.data);
+      router.push('/technicians/login');
     } catch (requestError) {
       if (axios.isAxiosError(requestError)) {
         setError(requestError.response?.data?.message ?? 'Could not create the technician profile');
@@ -55,6 +55,7 @@ export default function RegisterPage() {
         <form noValidate onSubmit={handleSubmit} className="grid gap-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
           <Field label="Full name" name="fullName" value={form.fullName} onChange={updateField} />
           <Field label="Email" name="email" value={form.email} onChange={updateField} />
+          <Field label="Password" name="password" value={form.password} onChange={updateField} />
           <Field label="Phone" name="phone" value={form.phone} onChange={updateField} placeholder="01XXXXXXXXX" />
           <Field label="Location / city" name="location" value={form.location} onChange={updateField} />
           <Field label="Country" name="country" value={form.country} onChange={updateField} />
