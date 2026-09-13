@@ -68,16 +68,21 @@ export default function Payments({ bookingId, onUnauthorized }: {
     } finally { setBusy(false); }
   }
 
-  return <section>
+  return <section className="portal-page payments-page">
     <PageIntro title={bookingId ? "One step closer." : "Your payment history."} description={bookingId ? "Review your booking details before confirming your payment." : "A clear record of your booking payments, all in one place."} />
     <div className="mt-3 flex gap-4">
       <Link className="text-primary underline" href="/user/bookings">My bookings</Link>
       {bookingId && <Link className="text-primary underline" href="/user/payments">Payment history</Link>}
     </div>
+    {!bookingId && !loading && !error && <div className="portal-summary">
+      <div><span>Total paid</span><strong>BDT {history.filter(item => item.status === "paid").reduce((sum, item) => sum + Number(item.amount), 0).toFixed(2)}</strong></div>
+      <div><span>Transactions</span><strong>{history.length}</strong></div>
+      <div><span>Successful payments</span><strong>{history.filter(item => item.status === "paid").length}</strong></div>
+    </div>}
     {loading ? <LoadingState text="Loading payment details..." /> : bookingId ? quote && (
       <form noValidate onSubmit={pay} className="dui-card mt-6 max-w-xl space-y-4 border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
-        <p>Booking: #{quote.booking.id}</p><p>Slot: {quote.booking.slotNumber}</p>
-        <p className="text-xl font-semibold">Total amount: {quote.currency} {Number(quote.amount).toFixed(2)}</p>
+        <div className="payment-heading"><span className="portal-eyebrow">BOOKING SUMMARY</span><h2>Slot {quote.booking.slotNumber}</h2><p>Booking #{quote.booking.id}</p></div>
+        <p className="payment-amount">Total amount: {quote.currency} {Number(quote.amount).toFixed(2)}</p>
         <p className="flex items-center gap-3">Status <StatusBadge status={quote.booking.status} /></p>
         {quote.booking.status === "pending_payment" &&
           <button disabled={busy} className="dui-btn dui-btn-primary">
@@ -102,11 +107,12 @@ export default function Payments({ bookingId, onUnauthorized }: {
           <td className="p-4">{new Date(item.paidAt || item.paymentDate).toLocaleString()}</td>
         </tr>)}</tbody>
       </table></div>
-    ) : !error && <p className="mt-6">No payments yet.</p>}
+    ) : !error && <div className="portal-empty"><h2>No payments yet</h2><p>Your payment records will appear here after you pay for a booking.</p><Link href="/user/bookings" className="dui-btn dui-btn-primary">View bookings</Link></div>}
     {error && (!bookingId || !quote) && <p role="alert" className="dui-alert dui-alert-error dui-alert-soft mt-4 text-sm">{error}</p>}
     {error && <button disabled={busy || loading} className="mt-3 underline" onClick={() => { setError(""); setLoading(true); setAttempt(value => value + 1); }}>Refresh details</button>}
   </section>;
 }
+
 
 
 

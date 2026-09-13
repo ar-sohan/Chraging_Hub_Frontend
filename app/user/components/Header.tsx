@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import NotificationBell from "./NotificationBell";
+import UserDock from "./UserDock";
 
 type HeaderProps = { user?: { id: number }; onLogout?: () => void };
 
@@ -65,13 +66,19 @@ export default function Header({ user, onLogout }: HeaderProps) {
             </svg>
           </button>
           <Link href={user ? "/user/dashboard" : "/user"} onClick={() => setMenuOpen(false)}
-            className="whitespace-nowrap text-lg font-bold tracking-tight sm:text-xl">Charger Hub</Link>
+            className="portal-brand whitespace-nowrap text-lg font-bold tracking-tight sm:text-xl">
+              <span className="portal-brand-mark" aria-hidden="true">
+                <svg width="18" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 5 14h6l-1 8 9-13h-6l1-7Z" /></svg>
+              </span>
+              Charger Hub<span className="text-primary">.</span>
+            </Link>
         </div>
 
 
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           {user && <>
+            <UserDock userId={user.id} />
             <NotificationBell key={user.id} userId={user.id} onUnauthorized={onLogout} />
             <button type="button" onClick={onLogout}
               className="dui-btn dui-btn-ghost dui-btn-sm hidden sm:inline-flex">Logout</button>
@@ -88,6 +95,9 @@ export default function Header({ user, onLogout }: HeaderProps) {
     </header>
   );
 }
+
+
+
 
 
 

@@ -6,6 +6,7 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 
+
 export type CurrentUser = {
   id: number;
   fullName: string;
@@ -96,13 +97,17 @@ export default function ProtectedUserPage({
   }
 
   return (
-    <div data-theme="light" className="ev-green flex min-h-screen flex-col bg-base-200 text-base-content">
+    <div data-theme="light" className="ev-green user-portal-shell flex min-h-screen flex-col bg-base-200 text-base-content">
       <Header user={user} onLogout={logout} />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-8 sm:py-10">{children(user, setUser, logout)}</main>
       <Footer />
+
     </div>
   );
 }
+
+
+
 
 
 

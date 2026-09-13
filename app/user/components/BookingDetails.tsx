@@ -25,7 +25,7 @@ export default function BookingDetails({ id, onUnauthorized }: {
   const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const validId = /^[1-9]d*$/.test(id) && Number.isSafeInteger(Number(id));
+  const validId = /^[1-9][0-9]*$/.test(id) && Number.isSafeInteger(Number(id));
 
   useEffect(() => {
     if (!validId) return;
@@ -70,12 +70,12 @@ export default function BookingDetails({ id, onUnauthorized }: {
 
   if (!validId || missing) notFound();
   return (
-    <section className="max-w-xl">
+    <section className="portal-page booking-details-page">
       <PageIntro title="Your charging plan." description="Everything you need to know about this booking." />
       <Link href="/user/bookings" className="mt-3 inline-block text-primary underline">Back to My Bookings</Link>
       {loading ? <LoadingState text="Loading booking details..." /> : booking && (
         <div className="dui-card mt-6 border border-base-300 bg-base-100 p-6 shadow-sm">
-          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="payment-heading"><span className="portal-eyebrow">YOUR RESERVATION</span><h2>Slot {booking.slotNumber}</h2></div><dl className="profile-fields">
             <dt className="font-semibold">Booking ID</dt><dd>#{booking.id}</dd>
             <dt className="font-semibold">Slot</dt><dd>{booking.slotNumber}</dd>
             <dt className="font-semibold">Booked at</dt><dd>{new Date(booking.bookingTime).toLocaleString()}</dd>
@@ -103,6 +103,7 @@ export default function BookingDetails({ id, onUnauthorized }: {
     </section>
   );
 }
+
 
 
 

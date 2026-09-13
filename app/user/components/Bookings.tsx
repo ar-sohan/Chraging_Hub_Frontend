@@ -1,17 +1,22 @@
 "use client";
+import BookingList from "./BookingList";
+
 import PageIntro from "./PageIntro";
 
 import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+
 import LoadingState from "./LoadingState";
 import StatusBadge from "./StatusBadge";
 import { z } from "zod";
 
+type Station = { id: string; name: string; area: string; block: string; road: string; house: string };
+type Slot = { slotNumber: string; available: boolean; station: Station };
 type Booking = { id: number; slotNumber: string; status: string; bookingTime: string };
 const slotSchema = z.string().trim().toUpperCase().regex(
-  /^A-([1-9]|[12][0-9]|30)$/,
-  "Please select an available slot"
+  /^A-[1-9][0-9]*$/,
+  "Invalid slot identifier. Select a slot from the list."
 );
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 const statusLabels: Record<string, string> = {
@@ -22,7 +27,13 @@ const statusLabels: Record<string, string> = {
 export default function Bookings({ createMode = false, onUnauthorized }: {
   createMode?: boolean; onUnauthorized: () => void;
 }) {
-  const [slots, setSlots] = useState<{ slotNumber: string; available: boolean }[]>([]);
+
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [stations, setStations] = useState<Station[]>([]);
+  const [stationError, setStationError] = useState("");
+  const [block, setBlock] = useState("");
+  const [road, setRoad] = useState("");
+  const [stationId, setStationId] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [slotsLoading, setSlotsLoading] = useState(true);
   const [slotsError, setSlotsError] = useState("");
@@ -78,7 +89,8 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     const controller = new AbortController();
     const token = localStorage.getItem("accessToken");
     if (!token) return;
-    axios.get<{ slotNumber: string; available: boolean }[]>(apiUrl + "/user/slots", {
+    axios.get<Slot[]>(apiUrl + "/user/slots", {
+      params: { block: block || undefined, road: road || undefined, stationId: stationId || undefined },
       headers: { Authorization: "Bearer " + token }, signal: controller.signal,
     }).then(({ data }) => {
       if (controller.signal.aborted) return;
@@ -97,20 +109,57 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
       if (!controller.signal.aborted) setSlotsLoading(false);
     });
     return () => controller.abort();
-  }, [createMode, slotAttempt]);
+  }, [createMode, slotAttempt, block, road, stationId]);
 
   useEffect(() => {
     if (!createMode) return;
     const refresh = () => { setSlotsLoading(true); setSlotAttempt((value) => value + 1); };
     window.addEventListener("focus", refresh);
-    return () => window.removeEventListener("focus", refresh);
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") setSlotAttempt(value => value + 1);
+    }, 30000);
+    window.addEventListener("chargehub:notification", refresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("chargehub:notification", refresh);
+    };
   }, [createMode]);
+
+  useEffect(() => {
+    if (!createMode) return;
+    const controller = new AbortController();
+    const token = localStorage.getItem("accessToken");
+    axios.get<Station[]>(apiUrl + "/user/stations", {
+      headers: { Authorization: "Bearer " + token }, signal: controller.signal,
+    }).then(({ data }) => {
+      if (!controller.signal.aborted) { setStations(data); setStationError(""); }
+    }).catch((cause: unknown) => {
+      if (controller.signal.aborted) return;
+      if (axios.isAxiosError(cause) && cause.response?.status === 401) { onUnauthorized(); return; }
+      setStationError("Unable to load locations. Reconnecting automatically.");
+    });
+    return () => controller.abort();
+  }, [createMode, onUnauthorized, slotAttempt]);
+
+  function changeLocation(nextBlock: string, nextRoad: string, nextStation: string) {
+    setBlock(nextBlock); setRoad(nextRoad); setStationId(nextStation);
+    setSelectedSlot(""); setSlots([]); setSlotsLoading(true);
+    setError(""); setMessage("");
+  }
+
+  const roads = [...new Set(stations.filter(station => !block || station.block === block).map(station => station.road))];
+  const visibleStations = stations.filter(station => (!block || station.block === block) && (!road || station.road === road) && (!stationId || station.id === stationId));
 
   async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
 
     setError(""); setMessage("");
+    if (!selectedSlot) { setError("Choose a slot before booking."); return; }
+    if (slotsLoading || slotsError || !slots.some(slot => slot.slotNumber === selectedSlot && slot.available)) {
+      setError("Please select an available slot from the current location."); return;
+    }
     const result = slotSchema.safeParse(selectedSlot);
     if (!result.success) { setError(result.error.issues[0].message); return; }
     const headers = auth();
@@ -119,13 +168,15 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     try {
       const { data } = await axios.post<Booking>(`${apiUrl}/user/bookings`,
         { slotNumber: result.data }, { headers });
-      setMessage(`Booking #${data.id} created for slot ${data.slotNumber}. Payment is pending.`);
       setSelectedSlot("");
-      setSlots((items) => items.map((slot) => slot.slotNumber === data.slotNumber ? { ...slot, available: false } : slot));
-    } catch (cause) { showError(cause); }
-    finally { setBusy(false); setSlotsLoading(true); setSlotAttempt((value) => value + 1); }
+      window.location.assign("/user/payments/" + encodeURIComponent(String(data.id)));
+    } catch (cause) {
+      showError(cause);
+      setBusy(false);
+      setSlotsLoading(true);
+      setSlotAttempt((value) => value + 1);
+    }
   }
-
   async function cancel(id: number) {
     if (busy) return;
     const headers = auth();
@@ -142,42 +193,88 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
   }
 
   return (
-    <section>
-      <PageIntro title={createMode ? "Find your next spot." : "Your bookings, together."} description={createMode ? "Choose an available charging slot and make it yours." : "Keep track of your charging plans and manage upcoming bookings."} />
+    <section className="portal-page bookings-page">
+      <PageIntro title={createMode ? "Find your next spot." : "My bookings"} description={createMode ? "Choose an available charging slot and make it yours." : "Keep track of your charging plans and manage upcoming bookings."} />
       <Link className="mt-3 inline-block text-primary underline"
         href={createMode ? "/user/bookings" : "/user/bookings/new"}>
         {createMode ? "View my bookings" : "Book a slot"}
       </Link>
+      {!createMode && !loading && !error && <div className="portal-summary">
+        <div><span>All bookings</span><strong>{bookings.length}</strong></div>
+        <div><span>Awaiting payment</span><strong>{bookings.filter(item => item.status === "pending_payment").length}</strong></div>
+        <div><span>Completed sessions</span><strong>{bookings.filter(item => item.status === "completed").length}</strong></div>
+      </div>}
       {createMode ? (
-        <form noValidate onSubmit={create} className="dui-card mt-6 max-w-2xl border border-base-300 bg-base-100 p-5 shadow-sm sm:p-7">
-          <h2 className="font-semibold">Select a slot</h2>
-          <p className="mt-2 text-sm text-base-content/65">Light green: available · Gray: booked · Solid green: selected</p>
-          <button type="button" className="mt-3 text-primary underline" disabled={busy || slotsLoading}
-            onClick={() => { setSlotsLoading(true); setSlotAttempt((value) => value + 1); }}>Refresh availability</button>
-          {slotsLoading && <p role="status" className="mt-3">Loading availability...</p>}
-          {!slotsLoading && !slotsError && (
-            <p className="mt-3">{slots.filter((slot) => slot.available).length} of 30 slots available</p>
-          )}
-          <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5" aria-label="Charging slots">
-            {slots.map((slot) => (
-              <button key={slot.slotNumber} type="button"
-                disabled={!slot.available || busy || slotsLoading || !!slotsError}
-                aria-pressed={selectedSlot === slot.slotNumber}
-                onClick={() => { setSelectedSlot(slot.slotNumber); setError(""); setMessage(""); }}
-                className={"dui-btn h-auto min-h-20 flex-col gap-1 rounded-xl p-3 text-center shadow-none disabled:cursor-not-allowed " +
-                  (!slot.available ? "border-gray-300 bg-gray-100 text-gray-500" :
-                   selectedSlot === slot.slotNumber ? "border-primary bg-primary text-white" :
-                   "border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-primary hover:bg-emerald-100")}>
-                <span className="block font-semibold">{slot.slotNumber}</span>
-                <span className="text-xs">{!slot.available ? "Booked" : selectedSlot === slot.slotNumber ? "Selected" : "Available"}</span>
-              </button>
-            ))}
+        <form noValidate onSubmit={create} className="dui-card mt-6 max-w-5xl border border-base-300 bg-base-100 p-5 shadow-sm sm:p-7">
+          <h2 className="text-xl font-semibold">Find a charging location</h2>
+          <p className="mt-2 text-sm text-base-content/65">Bashundhara Residential Area</p>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <label className="dui-fieldset">
+              <span className="dui-fieldset-legend">Block</span>
+              <select className="dui-select w-full" value={block} disabled={busy || !stations.length}
+                onChange={event => changeLocation(event.target.value, "", "")}>
+                <option value="">All blocks</option>
+                {[...new Set(stations.map(station => station.block))].map(value => <option key={value} value={value}>Block {value}</option>)}
+              </select>
+            </label>
+            <label className="dui-fieldset">
+              <span className="dui-fieldset-legend">Road</span>
+              <select className="dui-select w-full" value={road} disabled={busy || !block}
+                onChange={event => changeLocation(block, event.target.value, "")}>
+                <option value="">All roads</option>
+                {roads.map(value => <option key={value} value={value}>Road {value}</option>)}
+              </select>
+            </label>
+            <label className="dui-fieldset">
+              <span className="dui-fieldset-legend">Station</span>
+              <select className="dui-select w-full" value={stationId} disabled={busy || !block}
+                onChange={event => changeLocation(block, road, event.target.value)}>
+                <option value="">All stations</option>
+                {stations.filter(station => (!block || station.block === block) && (!road || station.road === road)).map(station =>
+                  <option key={station.id} value={station.id}>{station.name} · House {station.house}</option>)}
+              </select>
+            </label>
           </div>
+          <p className="mt-5 text-xs text-base-content/60">Light green: available · Gray: booked · Solid green: selected</p>
+          {slotsLoading && <p role="status" className="mt-3">Loading availability...</p>}
+          {!slotsLoading && !slotsError && <p className="mt-3 text-sm">{slots.filter(slot => slot.available).length} of {slots.length} slots available in this selection</p>}
+          {!slotsLoading && !slotsError && visibleStations.map(station => {
+            const stationSlots = slots.filter(slot => slot.station.id === station.id);
+            return (
+              <section key={station.id} className="mt-5 rounded-2xl border border-base-300 p-4 sm:p-5" aria-label={station.name}>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-semibold">{station.name}</h3>
+                    <p className="mt-1 text-sm text-base-content/60">Block {station.block} · Road {station.road} · House {station.house}</p>
+                  </div>
+                  <span className="dui-badge dui-badge-soft dui-badge-success">{stationSlots.filter(slot => slot.available).length} available</span>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+                  {stationSlots.map(slot => (
+                    <button key={slot.slotNumber} type="button"
+                      disabled={!slot.available || busy}
+                      aria-pressed={selectedSlot === slot.slotNumber}
+                      onClick={() => { setSelectedSlot(slot.slotNumber); setError(""); setMessage(""); }}
+                      className={"dui-btn h-auto min-h-20 flex-col gap-1 rounded-xl p-3 text-center shadow-none disabled:cursor-not-allowed " +
+                        (!slot.available ? "border-gray-300 bg-gray-100 text-gray-500" :
+                        selectedSlot === slot.slotNumber ? "border-primary bg-primary text-white" :
+                        "border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-primary hover:bg-emerald-100")}>
+                      <span className="font-semibold">{slot.slotNumber}</span>
+                      <span className="text-xs">{!slot.available ? "Booked" : selectedSlot === slot.slotNumber ? "Selected" : "Available"}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+          {!slotsLoading && !slotsError && !visibleStations.length && <p className="mt-4">No stations found for this location.</p>}
           <p className="mt-4">{selectedSlot ? "Selected slot: " + selectedSlot : "Choose an available slot above."}</p>
           <button disabled={busy || slotsLoading || !!slotsError || !slots.some((slot) => slot.available)}
             className="dui-btn dui-btn-primary mt-5">
             {busy ? "Booking..." : "Book Slot"}
           </button>
+          {stationError && <p role="alert" className="mt-4 text-sm text-red-700">{stationError}</p>}
           {slotsError && <p role="alert" className="dui-alert dui-alert-error dui-alert-soft mt-4 text-sm">{slotsError}</p>}
           {error && <p role="alert" className="dui-alert dui-alert-error dui-alert-soft mt-4 text-sm">{error}</p>}
           {message && <p role="status" className="dui-alert dui-alert-success dui-alert-soft mt-4 text-sm">{message}</p>}
@@ -185,31 +282,7 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
       ) : (
         <>
           {loading ? <LoadingState text="Loading bookings..." /> : (
-            bookings.length ? <div className="mt-6 overflow-x-auto rounded-2xl border border-base-300 bg-base-100 shadow-sm">
-              <table className="dui-table w-full">
-                <thead><tr className="bg-gray-100">
-                  {["Booking", "Slot", "Status", "Booked at", "Action"].map((title) => <th className="p-4" key={title}>{title}</th>)}
-                </tr></thead>
-                <tbody>{bookings.map((booking) => (
-                  <tr key={booking.id} className="border-t">
-                    <td className="p-4">#{booking.id}</td><td className="p-4">{booking.slotNumber}</td>
-                    <td className="p-4"><StatusBadge status={booking.status} /></td>
-                    <td className="p-4">{new Date(booking.bookingTime).toLocaleString()}</td>
-                    <td className="p-4">
-                      <Link href={"/user/bookings/" + booking.id} className="dui-btn dui-btn-ghost dui-btn-sm mr-2 text-primary">Details</Link>
-                      {booking.status === "pending_payment" && <Link href={"/user/payments/" + booking.id} className="dui-btn dui-btn-ghost dui-btn-sm mr-2 text-primary">Pay Now</Link>}
-                      {booking.status === "pending_payment" && (
-                        cancelId === booking.id ? <div className="flex flex-wrap items-center gap-2">
-                          <span>Cancel this booking?</span>
-                          <button disabled={busy} onClick={() => cancel(booking.id)} className="text-red-700 underline disabled:opacity-50">{busy ? "Cancelling..." : "Yes, cancel"}</button>
-                          <button disabled={busy} onClick={() => setCancelId(null)} className="underline">Keep booking</button>
-                        </div> : <button disabled={busy} onClick={() => setCancelId(booking.id)} className="text-red-700 underline">Cancel</button>
-                      )}
-                    </td>
-                  </tr>
-                ))}</tbody>
-              </table>
-            </div> : !error && <p className="mt-6">You have no bookings yet.</p>
+            bookings.length ? <BookingList bookings={bookings} busy={busy} cancelId={cancelId} onCancel={cancel} onConfirm={setCancelId} /> : !error && <div className="portal-empty"><h2>Your next journey starts here</h2><p>Choose a location and reserve your first charging slot.</p><Link href="/user/bookings/new" className="dui-btn dui-btn-primary">Find a slot</Link></div>
           )}
           {error && <div className="mt-4"><p role="alert" className="text-red-700">{error}</p>
             <button className="mt-2 underline" disabled={busy || loading} onClick={() => { setError(""); setLoading(true); setAttempt((value) => value + 1); }}>Refresh bookings</button>
@@ -220,6 +293,14 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     </section>
   );
 }
+
+
+
+
+
+
+
+
 
 
 

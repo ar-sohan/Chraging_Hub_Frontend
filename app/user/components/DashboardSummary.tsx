@@ -1,5 +1,7 @@
 "use client";
-import PageIntro from "./PageIntro";
+import EVIllustration from "./EVIllustration";
+import DashboardCharts from "./DashboardCharts";
+import DashboardFeatureCards from "./DashboardFeatureCards";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -70,44 +72,57 @@ export default function DashboardSummary({ name, onUnauthorized }: {
   ).slice(0, 5) : [];
 
   return (
-    <section>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <PageIntro title={"Welcome back, " + name + "."} description="A clear view of your charging plans. Everything you need, right here." eyebrow="YOUR DASHBOARD" />
-
+    <section className="driver-dashboard">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Overview</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Welcome back, {name}.</h1>
+        </div>
+        <span className="hidden text-sm text-base-content/50 sm:block">Your personal charging space</span>
       </div>
-
-
-
+      <div className="dashboard-welcome">
+        <div className="dashboard-welcome-copy">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#bce4ab]">CHARGE SMART. TRAVEL EASY.</p>
+          <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Your next journey,<br />fully charged.</h2>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">Find your charging spot, keep track of bookings, and get on with your day.</p>
+          <Link href="/user/bookings/new" className="dashboard-book-button">Book a charging slot <span aria-hidden="true">↗</span></Link>
+        </div>
+        <div className="dashboard-welcome-art"><EVIllustration /></div>
+      </div>
       {loading && <LoadingState text="Loading your dashboard..." />}
       {data && (
         <>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="dashboard-metrics">
             {[
               { label: "Available Slots", value: data.slots.filter(slot => slot.available).length + " / " + data.slots.length, href: "/user/bookings/new" },
               { label: "My Bookings", value: data.bookings.length, href: "/user/bookings" },
               { label: "Pending Payments", value: pending.length, href: "/user/bookings" },
               { label: "Confirmed Bookings", value: data.bookings.filter(item => item.status === "confirmed").length, href: "/user/bookings" },
-            ].map(card => <Link href={card.href} key={card.label} className="dui-stat rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm transition-colors hover:border-primary">
-              <p className="dui-stat-title text-sm">{card.label}</p>
+            ].map(card => <Link href={card.href} key={card.label} className="dui-stat rounded-2xl border border-base-300 bg-base-100 p-6 transition-colors hover:border-emerald-300">
+              <div className="flex items-center justify-between gap-3"><p className="dui-stat-title text-sm">{card.label}</p><span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">↗</span></div>
               <p className="dui-stat-value mt-3 text-3xl font-semibold tracking-tight text-base-content">{card.value}</p>
             </Link>)}
           </div>
+
+
 
           {pending.length > 0 && <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-amber-50 p-5">
             <p>{pending.length} booking{pending.length === 1 ? "" : "s"} awaiting payment.</p>
             <Link href={"/user/payments/" + pending[0].id} className="dui-btn dui-btn-primary">Pay Now</Link>
           </div>}
 
+          <DashboardCharts bookings={data.bookings} slots={data.slots} />
+          <DashboardFeatureCards latest={recent[0]} />
           <div className="mt-8 flex items-center justify-between gap-3">
-            <h2 className="text-xl font-semibold">Recent Bookings</h2>
+            <div><h2 className="text-lg font-semibold">Recent bookings</h2><p className="mt-1 text-sm text-base-content/50">Your latest charging plans, at a glance.</p></div>
             <Link className="dui-btn dui-btn-ghost dui-btn-sm text-primary" href="/user/bookings">View all</Link>
           </div>
           {recent.length ? <div className="mt-4 overflow-x-auto rounded-2xl border border-base-300 bg-base-100 shadow-sm">
             <table className="dui-table w-full">
-              <thead className="bg-gray-100"><tr>
+              <thead className="bg-[#f1f5ef] text-base-content/60"><tr>
                 {["Booking", "Slot", "Status", "Booked at", "Action"].map(label => <th key={label} className="p-4">{label}</th>)}
               </tr></thead>
-              <tbody>{recent.map(booking => <tr key={booking.id} className="border-t">
+              <tbody>{recent.map(booking => <tr key={booking.id} className="border-t border-base-300/60 hover:bg-base-200/50">
                 <td className="p-4">#{booking.id}</td><td className="p-4">{booking.slotNumber}</td>
                 <td className="p-4"><StatusBadge status={booking.status} /></td>
                 <td className="p-4">{new Date(booking.bookingTime).toLocaleString()}</td>
@@ -123,6 +138,10 @@ export default function DashboardSummary({ name, onUnauthorized }: {
     </section>
   );
 }
+
+
+
+
 
 
 

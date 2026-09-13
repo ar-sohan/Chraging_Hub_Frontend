@@ -1,3 +1,4 @@
+import Footer from "./Footer";
 import Link from "next/link";
 import EVIllustration from "./EVIllustration";
 
@@ -12,20 +13,20 @@ function Mark() {
 
 export default function LandingPage({ portal = false }: { portal?: boolean }) {
   return (
-    <div data-theme="light" className="ev-green min-h-screen bg-[#f8faf6] text-[#111b29]">
+    <div data-theme="light" className="ev-green landing-screen min-h-screen bg-[#f8faf6] text-[#111b29]">
       <header className="border-b border-[#e5ebe4] bg-white">
         <div className="dui-navbar mx-auto max-w-7xl flex-wrap justify-between gap-3 px-5 py-5 sm:px-8">
           <Link href="/" aria-label="ChargeHub home"><Mark /></Link>
           <nav className="flex items-center gap-2 sm:gap-6" aria-label="Public navigation">
             <Link aria-current={!portal ? "page" : undefined} className={"dui-btn dui-btn-ghost dui-btn-sm hidden sm:inline-flex " + (!portal ? "text-primary" : "")} href="/">Home</Link>
-            <Link aria-current={portal ? "page" : undefined} className={"dui-btn dui-btn-ghost dui-btn-sm " + (portal ? "text-primary" : "")} href="/user">User portal</Link>
-            <Link href="/user/login" className="dui-btn rounded-full border-0 bg-[#002f25] px-5 text-white hover:bg-[#005541]">Log in ↗</Link>
+            <Link className="dui-btn dui-btn-ghost dui-btn-sm" href="/user/login">Sign in</Link>
+            <Link href="/user/registration" className="dui-btn landing-primary">Create account ↗</Link>
           </nav>
         </div>
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+        <section className="landing-hero">
           <div>
             <span className="dui-badge h-auto gap-2 rounded-full border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-semibold tracking-wider text-[#007b59]">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -40,15 +41,15 @@ export default function LandingPage({ portal = false }: { portal?: boolean }) {
                 "Make charging the easiest part of your day. Your ChargeHub account is the first step toward a smoother electric journey."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={portal ? "/user/registration" : "/user"} className="dui-btn h-13 rounded-full border-0 bg-[#002f25] px-6 text-white hover:bg-[#005541]">
-                {portal ? "Create your account" : "Explore user portal"} <span className="ml-3" aria-hidden="true">↗</span>
+              <Link href="/user/registration" className="dui-btn landing-primary">
+                Create your account <span className="ml-3" aria-hidden="true">↗</span>
               </Link>
               <a href="#how-it-works" className="dui-btn dui-btn-outline h-13 rounded-full border-[#cad8d1] px-6 hover:bg-emerald-50 hover:text-[#002f25]">How it works ↓</a>
             </div>
             <p className="mt-6 text-xs text-[#758680]">Built for electric drivers. Designed around you.</p>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] bg-[#dcecdc] px-1 pb-5 pt-8 sm:px-5">
+          <div className="landing-art">
             <span className="absolute left-6 top-6 rounded-full bg-white/85 px-3 py-2 text-[10px] font-semibold tracking-wide sm:text-xs">ELECTRIC LOOKS GOOD ON YOU</span>
             <EVIllustration />
             <div className="absolute bottom-5 left-5 right-5 flex w-fit max-w-[calc(100%-2.5rem)] items-center gap-3 rounded-2xl border border-white bg-white/95 px-4 py-3 shadow-sm">
@@ -75,7 +76,7 @@ export default function LandingPage({ portal = false }: { portal?: boolean }) {
           <div className="mt-9 grid gap-5 md:grid-cols-3">
             {[
               {number:"01", title:"Make it yours", text:"Create your driver account with a few simple details."},
-              {number:"02", title:"Find your spot", text:"Choose an available slot and manage your booking from one place."},
+              {number:"02", title:"Find your spot", text:"Filter by block and road, choose your station, then reserve an available slot."},
               {number:"03", title:"Stay in the know", text:"See your booking status and receive updates in your notification bell."},
             ].map(item => <article key={item.number} className="dui-card border border-[#dfe7ec] bg-white shadow-none">
               <div className="dui-card-body p-7"><span className="text-sm font-medium text-primary">{item.number} /</span>
@@ -87,14 +88,9 @@ export default function LandingPage({ portal = false }: { portal?: boolean }) {
         </section>
       </main>
 
-      <footer className="border-t border-[#e2e8ef] bg-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-7 text-sm sm:px-8">
-          <p><span className="font-semibold">ChargeHub.</span><span className="ml-3 text-[#6a7e8d]">A better way to charge.</span></p>
-          <div className="flex items-center gap-6"><span className="text-xs text-[#6a7e8d]">© {new Date().getFullYear()} ChargeHub</span>
-            <Link href="/admin" className="text-xs text-[#6a7e8d] hover:text-primary">Admin portal ↗</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
+
+

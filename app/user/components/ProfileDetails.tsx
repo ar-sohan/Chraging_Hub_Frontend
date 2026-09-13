@@ -1,5 +1,6 @@
 "use client";
 import PageIntro from "./PageIntro";
+import Link from "next/link";
 
 import { FormEvent, useState } from "react";
 import axios from "axios";
@@ -61,12 +62,17 @@ export default function ProfileDetails({ user, onSaved, onUnauthorized }: {
 
   const inputClass = "dui-input mt-1 w-full";
   return (
-    <section className="max-w-xl">
+    <section className="portal-page profile-page">
       <PageIntro title="Make it yours." description="Keep your driver profile up to date." eyebrow="MY PROFILE" />
+      <div className="profile-identity">
+        <div className="profile-avatar" aria-hidden="true">{user.fullName.trim().split(" ").map(part => part[0]).slice(0, 2).join("").toUpperCase()}</div>
+        <div><p className="portal-eyebrow">DRIVER ACCOUNT</p><h2>{user.fullName}</h2><p className="break-all">{user.email}</p></div>
+        <Link className="dui-btn dui-btn-ghost" href="/user/change-password">Change password ↗</Link>
+      </div>
       {editing ? (
         <form noValidate onSubmit={save} className="dui-card mt-6 border border-base-300 bg-base-100 shadow-sm">
           <fieldset disabled={saving} className="dui-card-body gap-4 p-6">
-            <legend className="mb-4 text-xl font-semibold">Edit Profile</legend>
+            <legend className="mb-4 text-xl font-semibold">Update Profile</legend>
             <label className="block" htmlFor="profile-name">Name
               <input className={inputClass} id="profile-name" name="fullName" defaultValue={user.fullName} autoComplete="name" />
             </label>
@@ -93,20 +99,22 @@ export default function ProfileDetails({ user, onSaved, onUnauthorized }: {
         </form>
       ) : (
         <div className="dui-card mt-6 border border-base-300 bg-base-100 shadow-sm"><div className="dui-card-body p-6">
-          <dl className="grid grid-cols-1 gap-2 sm:grid-cols-[8rem_1fr] sm:gap-4">
+          <h2 className="mb-5 text-lg font-semibold">Personal information</h2><dl className="profile-fields">
             <dt className="font-semibold">Name</dt><dd className="break-words">{user.fullName}</dd>
             <dt className="font-semibold">Email</dt><dd className="break-all">{user.email}</dd>
             <dt className="font-semibold">Phone</dt><dd>{user.phone || "Not provided"}</dd>
             <dt className="font-semibold">Age</dt><dd>{user.age}</dd>
             <dt className="font-semibold">Gender</dt><dd className="capitalize">{user.gender}</dd>
           </dl>
-          <div className="dui-card-actions mt-5"><button className="dui-btn dui-btn-primary" onClick={() => { setEditing(true); setMessage(""); setError(""); }}>Edit Profile</button></div>
+          <div className="dui-card-actions mt-5"><button className="dui-btn dui-btn-primary" onClick={() => { setEditing(true); setMessage(""); setError(""); }}>Update Profile</button></div>
         </div></div>
       )}
       {message && <p role="status" className="mt-4 text-green-700">{message}</p>}
     </section>
   );
 }
+
+
 
 
 
