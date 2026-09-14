@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Pusher from "pusher-js";
 import Link from "next/link";
@@ -11,6 +11,29 @@ const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 export default function NotificationBell({ userId, onUnauthorized }: {
   userId: number; onUnauthorized?: () => void;
 }) {
+  const [toast, setToast] = useState<Notice | null>(null);
+  const received = useRef(new Set<number>());
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 5000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+  useEffect(() => {
+    function show(event: Event) {
+      const notice = (event as CustomEvent<Notice>).detail;
+      if (!notice || !Number.isSafeInteger(notice.id) || received.current.has(notice.id)) return;
+      received.current.add(notice.id);
+      setToast(notice);
+      setItems(items => [notice, ...items.filter(item => item.id !== notice.id)]);
+    }
+    window.addEventListener("chargehub:toast", show);
+    const pending = sessionStorage.getItem("chargehub:pending-toast");
+    if (pending) {
+      sessionStorage.removeItem("chargehub:pending-toast");
+      try { show(new CustomEvent("chargehub:toast", { detail: JSON.parse(pending) })); } catch {}
+    }
+    return () => window.removeEventListener("chargehub:toast", show);
+  }, []);
   const [items, setItems] = useState<Notice[]>([]);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
@@ -68,6 +91,12 @@ export default function NotificationBell({ userId, onUnauthorized }: {
     channel.bind("pusher:subscription_error", () => { setReady(false); setError("Notification connection failed. Reload to reconnect."); });
     channel.bind("notification", (notice: Notice) => {
       if (!Number.isSafeInteger(notice.id) || !Number.isSafeInteger(notice.bookingId)) return;
+      const waiting = sessionStorage.getItem("chargehub:action");
+      const defer = (waiting === "booking" && notice.title === "Booking successful") || (waiting === "payment" && notice.title === "Payment successful");
+      if (!defer && !received.current.has(notice.id)) {
+        received.current.add(notice.id);
+        setToast(notice);
+      }
       setItems(current => [notice, ...current.filter(item => item.id !== notice.id)].sort((a, b) => b.id - a.id).slice(0, 50));
       window.dispatchEvent(new Event("chargehub:notification"));
     });
@@ -100,6 +129,7 @@ export default function NotificationBell({ userId, onUnauthorized }: {
 
   const unread = items.filter(item => !item.read).length;
   return (
+    <>
     <details className="relative">
       <summary aria-label={"Notifications, " + unread + " unread"}
         className="notification-nav relative flex size-12 cursor-pointer list-none items-center justify-center rounded-lg text-base-content/60 hover:bg-gray-100 [&::-webkit-details-marker]:hidden">
@@ -128,8 +158,22 @@ export default function NotificationBell({ userId, onUnauthorized }: {
       </div>
       <span role="status" className="sr-only">{unread} unread notifications</span>
     </details>
+    {toast && <div className="notification-popup" role="status" aria-live="polite" aria-atomic="true">
+      <div className="notification-popup-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">{toast.title}</p>
+        <p className="mt-1 text-sm leading-6 text-base-content/70">{toast.message}</p>
+        <Link className="mt-2 inline-block text-sm font-semibold text-primary underline" href={"/user/bookings/" + toast.bookingId} onClick={() => setToast(null)}>View booking</Link>
+      </div>
+      <button type="button" className="dui-btn dui-btn-ghost dui-btn-sm" aria-label="Dismiss notification" onClick={() => setToast(null)}>×</button>
+    </div>}
+    </>
   );
 }
+
+
 
 
 

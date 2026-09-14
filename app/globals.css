@@ -385,3 +385,14 @@
 @media (max-width: 600px) {
  .booking-summary-art .summary-illustration { width: 60px; height: 64px; }
 }
+
+.notification-popup {
+  position: fixed; top: 90px; right: 20px; z-index: 100;
+  display: flex; align-items: flex-start; gap: 12px;
+  width: min(420px, calc(100vw - 32px)); padding: 18px;
+  border: 1px solid #bcdcc4; border-left: 4px solid #168053;
+  border-radius: 16px; background: #fff; color: #1c3f2b;
+  box-shadow: 0 12px 40px #14392324;
+}
+.notification-popup-icon { padding: 9px; border-radius: 12px; background: #eaf6eb; color: #168053; }
+@media (max-width: 640px) { .notification-popup { top: 132px; right: 16px; } }

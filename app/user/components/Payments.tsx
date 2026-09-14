@@ -9,7 +9,7 @@ import StatusBadge from "./StatusBadge";
 type Booking = { id: number; slotNumber: string; status: string };
 type Quote = { booking: Booking; amount: number; currency: string; demo: boolean };
 type Payment = { id: number; amount: number | string; status: string; paymentMethod: string;
-  transactionId: string; paidAt?: string; paymentDate: string; booking: Booking; emailStatus?: string };
+  transactionId: string; paidAt?: string; paymentDate: string; booking: Booking; emailStatus?: string; notification?: { id: number; bookingId: number; title: string; message: string; read: boolean; createdAt: string } };
 const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function Payments({ bookingId, onUnauthorized }: {
@@ -51,9 +51,12 @@ export default function Payments({ bookingId, onUnauthorized }: {
     if (!token) { onUnauthorized(); return; }
     setBusy(true); setError("");
     try {
+      sessionStorage.setItem("chargehub:action", "payment");
       const {data} = await axios.post<Payment>(base + "/user/payments/demo",
         { bookingId: quote.booking.id }, { headers: { Authorization: "Bearer " + token } });
+      setBusy(false);
       setReceipt(data);
+      if (data.notification) window.dispatchEvent(new CustomEvent("chargehub:toast", { detail: data.notification }));
       setQuote({...quote, booking: data.booking});
     } catch (cause) {
       if (axios.isAxiosError(cause)) {
@@ -65,7 +68,7 @@ export default function Payments({ bookingId, onUnauthorized }: {
         const detail = cause.response.data?.message;
         setError(Array.isArray(detail) ? detail.join(" ") : typeof detail === "string" ? detail : "Payment request failed. You can safely retry.");
       } else setError("Payment request failed. You can safely retry.");
-    } finally { setBusy(false); }
+    } finally { sessionStorage.removeItem("chargehub:action"); setBusy(false); }
   }
 
   return <section className="portal-page payments-page">
@@ -90,7 +93,7 @@ export default function Payments({ bookingId, onUnauthorized }: {
           </button>}
         {receipt && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-900">
           <p>Payment process completed. Booking confirmed.</p>
-          <p>Reference: {receipt.transactionId}</p>
+          <p>Reference: {receipt.transactionId?.replace(/^DEMO-/, "PAY-")}</p>
           <p>{receipt.emailStatus === "sent" ? "Confirmation email sent." :
             receipt.emailStatus === "failed" ? "Booking saved, but the confirmation email could not be sent." :
             "This payment was already processed."}</p>
@@ -103,7 +106,7 @@ export default function Payments({ bookingId, onUnauthorized }: {
         <tbody>{history.map(item => <tr className="border-t" key={item.id}>
           <td className="p-4">#{item.booking.id} / {item.booking.slotNumber}</td>
           <td className="p-4">{Number(item.amount).toFixed(2)}</td><td className="p-4">{item.paymentMethod === "demo" ? "Test payment" : item.paymentMethod || "—"}</td>
-          <td className="p-4"><StatusBadge status={item.status} /></td><td className="p-4">{item.transactionId || "—"}</td>
+          <td className="p-4"><StatusBadge status={item.status} /></td><td className="p-4">{item.transactionId?.replace(/^DEMO-/, "PAY-") || "—"}</td>
           <td className="p-4">{new Date(item.paidAt || item.paymentDate).toLocaleString()}</td>
         </tr>)}</tbody>
       </table></div>
@@ -112,6 +115,7 @@ export default function Payments({ bookingId, onUnauthorized }: {
     {error && <button disabled={busy || loading} className="mt-3 underline" onClick={() => { setError(""); setLoading(true); setAttempt(value => value + 1); }}>Refresh details</button>}
   </section>;
 }
+
 
 
 

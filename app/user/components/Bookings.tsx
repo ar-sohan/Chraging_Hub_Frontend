@@ -14,7 +14,7 @@ import { z } from "zod";
 
 type Station = { id: string; name: string; area: string; block: string; road: string; house: string };
 type Slot = { slotNumber: string; available: boolean; station: Station };
-type Booking = { id: number; slotNumber: string; status: string; bookingTime: string };
+type Booking = { id: number; slotNumber: string; status: string; bookingTime: string; notification?: { id: number; bookingId: number; title: string; message: string; read: boolean; createdAt: string } };
 const slotSchema = z.string().trim().toUpperCase().regex(
   /^A-[1-9][0-9]*$/,
   "Invalid slot identifier. Select a slot from the list."
@@ -167,11 +167,15 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     if (!headers) return;
     setBusy(true);
     try {
+      sessionStorage.setItem("chargehub:action", "booking");
       const { data } = await axios.post<Booking>(`${apiUrl}/user/bookings`,
         { slotNumber: result.data }, { headers });
       setSelectedSlot("");
+      if (data.notification) sessionStorage.setItem("chargehub:pending-toast", JSON.stringify(data.notification));
+      sessionStorage.removeItem("chargehub:action");
       window.location.assign("/user/payments/" + encodeURIComponent(String(data.id)));
     } catch (cause) {
+      sessionStorage.removeItem("chargehub:action");
       showError(cause);
       setBusy(false);
       setSlotsLoading(true);
@@ -294,6 +298,7 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     </section>
   );
 }
+
 
 
 
