@@ -65,8 +65,19 @@ export default function Login() {
       return;
     }
 
-    try {
+        try {
       const data = await loginAdmin(result.data);
+
+      localStorage.setItem("adminToken", data.access_token);
+
+      const adminRes = await axios.get("http://localhost:3000/admin", {
+        params: { email: result.data.email },
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      const adminId = Array.isArray(adminRes.data)
+        ? adminRes.data[0].id
+        : adminRes.data.id;
+      localStorage.setItem("adminId", adminId);
 
       console.log("Login successful:", data);
 

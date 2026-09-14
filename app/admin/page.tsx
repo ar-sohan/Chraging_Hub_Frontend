@@ -1,9 +1,12 @@
 import Link from 'next/link';
 import Header from '../components/Header';
+import Nav from '../components/Nav';
+import Footer from '../components/Footer';
 
 export default function AdminHome() {
     return (
         <>
+            <Nav></Nav>
             <Header></Header>
             <div className='m-10'>
                 <div className="mt-16 flex flex-col items-center justify-center gap-5">
@@ -15,6 +18,7 @@ export default function AdminHome() {
                     </div>
                 </div>
             </div>
+            <Footer></Footer>
         </>
     )
 }
