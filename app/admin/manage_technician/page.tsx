@@ -3,27 +3,30 @@
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import axios from 'axios';
-import Nav from '@/app/components/Nav';
 
 type ManagedUser = {
   id: number;
   name: string;
   email: string;
-  role: 'host';
+  role: string;
   status: string;
   isApproved: boolean;
 };
 
-export default function ManageGarage() {
+export default function ManageTechnician() {
     const [users, setUsers] = useState<ManagedUser[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [formError, setFormError] = useState('');
+
+    const fetchTechnicians = () => {
       const adminId = localStorage.getItem('adminId');
       const token = localStorage.getItem('adminToken');
-
+      setLoading(true);
       axios.get(`http://localhost:3000/admin/${adminId}/users`, {
         params: { role: 'technician' },
         headers: { Authorization: `Bearer ${token}` },
@@ -31,17 +34,63 @@ export default function ManageGarage() {
         .then(res => setUsers(res.data))
         .catch(err => console.error(err))
         .finally(() => setLoading(false));
-    }, []);
+    };
+
+    useEffect(() => { fetchTechnicians(); }, []);
+
+    const handleCreate = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setFormError('');
+      const adminId = localStorage.getItem('adminId');
+      const token = localStorage.getItem('adminToken');
+
+      try {
+        await axios.post(`http://localhost:3000/admin/${adminId}/user`,
+          { name, email, role: 'technician' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setName('');
+        setEmail('');
+        fetchTechnicians();
+      } catch (err) {
+        setFormError('Could not create technician — check the email is unique.');
+      }
+    };
 
     if (loading) return <p>Loading...</p>;
 
     return (
         <>
-           <Nav></Nav>
+            <div className='m-5'>
+                <Header></Header>
+            </div>
 
             <div className='m-5'>
                 <div className="flex flex-col justify-center items-center my-10">
                     <h1 className="text-2xl font-semibold">Welcome to Manage Technician</h1>
+
+                    <form onSubmit={handleCreate} className="flex gap-3 items-center justify-center my-5">
+                      <input
+                        className="input input-bordered"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                      <input
+                        className="input input-bordered"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                      <button className="btn bg-indigo-500 text-white" type="submit">
+                        Add Technician
+                      </button>
+                    </form>
+                    {formError && <p className="text-red-500 text-center">{formError}</p>}
+
                     <div className="w-3/4 mt-10 rounded-lg border border-gray-200 shadow-sm">
                         <h1 className='text-center text-2xl font-semibold text-gray-700 my-3'>Users</h1>
                         <table className="w-full table-auto border-separate bg-white text-sm text-gray-500 text-center">
