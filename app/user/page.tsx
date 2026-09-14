@@ -1,4 +1,1 @@
-import LandingPage from "./components/LandingPage";
-export default function UserHome() {
-  return <LandingPage portal />;
-}
+export { default } from "../page";

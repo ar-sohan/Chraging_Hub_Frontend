@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Header from '../components/Header'
+import Footer from '../components/Footer';
 
 export default function ManagePayments() {
   const users = [
@@ -13,6 +14,9 @@ export default function ManagePayments() {
     <>
       <div className='m-5'>
         <Header></Header>
+      </div>
+
+      <div className='m-5'>
         <div className="flex flex-col justify-center items-center my-10">
           <h1 className="text-2xl font-semibold">Welcome to Manage Payments</h1>
           <div className="w-3/4 mt-10 rounded-lg border border-gray-200 shadow-sm">
@@ -38,8 +42,8 @@ export default function ManagePayments() {
                         <span>{user.status}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <Link href={`/admin/user_details/${user.id}`}>
-                        <span className='px-3 py-2 bg-blue-200 text-blue-700 rounded-full border border-blue-600'>Details</span>
+                        <Link href={`/admin/payments_details/${user.id}`}>
+                          <span className='px-3 py-2 bg-blue-200 text-blue-700 rounded-full border border-blue-600'>Details</span>
                         </Link>
                       </td>
                     </tr>
@@ -49,6 +53,10 @@ export default function ManagePayments() {
             </table>
           </div>
         </div>
+      </div>
+
+      <div>
+        <Footer></Footer>
       </div>
     </>
   );

@@ -1,3 +1,4 @@
+import GarageCards from "./GarageCards";
 import Footer from "./Footer";
 import Link from "next/link";
 import EVIllustration from "./EVIllustration";
@@ -86,11 +87,10 @@ export default function LandingPage({ portal = false }: { portal?: boolean }) {
             </article>)}
           </div>
         </section>
+        <GarageCards />
       </main>
 
       <Footer />
     </div>
   );
 }
-
-

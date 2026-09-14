@@ -42,7 +42,7 @@ export default function ManageGarages() {
                                                 <span>{user.status}</span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <Link href={`/admin/user_details/${user.id}`}>
+                                                <Link href={`/admin/garage_details/${user.id}`}>
                                                     <span className='px-3 py-2 bg-blue-200 text-blue-700 rounded-full border border-blue-600'>Details</span>
                                                 </Link>
                                             </td>

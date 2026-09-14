@@ -208,15 +208,15 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
       {createMode ? (
         <form noValidate onSubmit={create} className="dui-card mt-6 max-w-5xl border border-base-300 bg-base-100 p-5 shadow-sm sm:p-7">
           <h2 className="text-xl font-semibold">Find a charging location</h2>
-          <p className="mt-2 text-sm text-base-content/65">Bashundhara Residential Area</p>
+          <p className="mt-2 text-sm text-base-content/65">Choose a garage location in Dhaka</p>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             <label className="dui-fieldset">
-              <span className="dui-fieldset-legend">Block</span>
+              <span className="dui-fieldset-legend">Location</span>
               <select className="dui-select w-full" value={block} disabled={busy || !stations.length}
                 onChange={event => changeLocation(event.target.value, "", "")}>
-                <option value="">All blocks</option>
-                {[...new Set(stations.map(station => station.block))].map(value => <option key={value} value={value}>Block {value}</option>)}
+                <option value="">All locations</option>
+                {[...new Set(stations.map(station => station.block))].map(value => <option key={value} value={value}>{stations.find(station => station.block === value)?.area}</option>)}
               </select>
             </label>
             <label className="dui-fieldset">
@@ -247,7 +247,7 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <h3 className="font-semibold">{station.name}</h3>
-                    <p className="mt-1 text-sm text-base-content/60">Block {station.block} · Road {station.road} · House {station.house}</p>
+                    <p className="mt-1 text-sm text-base-content/60">{station.area} · Road {station.road} · House {station.house}</p>
                   </div>
                   <span className="dui-badge dui-badge-soft dui-badge-success">{stationSlots.filter(slot => slot.available).length} available</span>
                 </div>
@@ -294,6 +294,7 @@ export default function Bookings({ createMode = false, onUnauthorized }: {
     </section>
   );
 }
+
 
 
 
