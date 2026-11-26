@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { FaultReportFormData, LoginFormData, MaintenanceFormData, ProfileUpdateFormData, RegistrationFormData, SafetyCheckFormData } from './schemas';
 import { FaultReport, MaintenanceTask, SafetyCheck, StationSearchResult, TechnicianProfile } from './types';
+import { API_URL } from '@/lib/config';
 
-const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT ?? 'http://localhost:3000', headers: { 'Content-Type': 'application/json' } });
+const api = axios.create({ baseURL: API_URL, headers: { 'Content-Type': 'application/json' } });
 
 api.interceptors.request.use((config) => {
   const token = typeof window === 'undefined' ? null : localStorage.getItem('technicianToken');

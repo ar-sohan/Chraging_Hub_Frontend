@@ -1,10 +1,13 @@
-import Image from "next/image";
-import Header from "./admin/components/Header";
-import Footer from "./admin/components/Footer";
+import Nav from "./components/Nav";
+import Footer from "./components/Footer";
+import ShowProduct from "./admin/showServices/page";
+import ShowStations from "./admin/showStations/page";
+import LandingLogin from "./components/LandingLogin";
 
 export default function Home() {
   return (
     <>
+      {/* navbar */}
       <div className="navbar bg-base-100 shadow-sm">
         <div className="navbar-start">
           <div className="dropdown">
@@ -14,41 +17,86 @@ export default function Home() {
             <ul
               tabIndex={-1}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-              <li><a>Item 1</a></li>
+              <li><a href="../admin/dashboard">Dashboard</a></li>
               <li>
-                <a>Parent</a>
+                <a>User Management</a>
                 <ul className="p-2">
-                  <li><a>Submenu 1</a></li>
-                  <li><a>Submenu 2</a></li>
+                  <li><a href="../admin/manage_payments">Payments</a></li>
+                  <li><a href="../admin/manage_bookings">Bookings</a></li>
+                  <li><a href="../admin/manage_user">Users</a></li>
                 </ul>
               </li>
-              <li><a>Item 3</a></li>
+              <li><a>Technician</a></li>
+              <li><a>Garage</a></li>
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">daisyUI</a>
+          <a className="btn btn-ghost text-xl">Charging Hub</a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
-            <li><a>Item 1</a></li>
+            <li><a href="../admin/dashboard">Dashboard</a></li>
             <li>
               <details>
-                <summary>Parent</summary>
+                <summary>User Management</summary>
                 <ul className="p-2 bg-base-100 w-40 z-1">
-                  <li><a>Submenu 1</a></li>
-                  <li><a>Submenu 2</a></li>
+                  <li><a href="../admin/manage_payments">Payments</a></li>
+                  <li><a href="../admin/manage_bookings">Bookings</a></li>
+                  <li><a href="../admin/manage_user">Users</a></li>
                 </ul>
               </details>
             </li>
-            <li><a>Item 3</a></li>
+            <li><a href="../admin/manage_technician">Technician</a></li>
+            <li><a href="../admin/manage_garage">Garage</a></li>
           </ul>
         </div>
         <div className="navbar-end">
-          <a className="btn">Button</a>
+          <a href="/admin/login" className="btn btn-sm bg-blue-500 text-white">
+            Login
+          </a>
         </div>
       </div>
-      {/* navbar */}
-      <h1 className="text-3xl text-center font-bold">Home</h1>
-      <Header></Header>
+      <div className="hero bg-base-200 min-h-screen">
+        <div className="hero-content flex-col lg:flex-row">
+          <img
+            alt="EV charging station"
+            src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800"
+            className="max-w-sm rounded-lg shadow-2xl"
+          />
+          <div>
+            <h1 className="text-5xl font-bold">Charge smarter, drive further.</h1>
+            <p className="py-6">
+              ChargeHub EV connects drivers to nearby charging stations in real time,
+              helps garage owners manage their stations, and gives technicians a
+              simple way to handle service requests — all in one platform.
+            </p>
+            <a href="#stations" className="btn btn-primary">Find a Station</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="services" className="py-10">
+        <h2 className="text-3xl font-bold text-center mb-8">Our Services</h2>
+        <ShowProduct></ShowProduct>
+      </div>
+
+      <div id="stations" className="py-10 bg-base-200">
+        <h2 className="text-3xl font-bold text-center mb-8">Charging Stations Near You</h2>
+        <ShowStations></ShowStations>
+      </div>
+
+      <div className="hero bg-base-200 min-h-screen">
+        <div className="hero-content flex-col lg:flex-row-reverse">
+          <div className="text-center lg:text-left">
+            <h1 className="text-5xl font-bold">Already a member?</h1>
+            <p className="py-6">
+              Log in to manage your bookings, track your charging history, or
+              access your garage and technician dashboard.
+            </p>
+          </div>
+          <LandingLogin></LandingLogin>
+        </div>
+      </div>
+
       <Footer></Footer>
     </>
   );

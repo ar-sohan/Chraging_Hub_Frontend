@@ -55,7 +55,7 @@ export default function RegisterPage() {
         <form noValidate onSubmit={handleSubmit} className="grid gap-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
           <Field label="Full name" name="fullName" value={form.fullName} onChange={updateField} />
           <Field label="Email" name="email" value={form.email} onChange={updateField} />
-          <Field label="Password" name="password" value={form.password} onChange={updateField} />
+          <Field label="Password" name="password" type="password" value={form.password} onChange={updateField} />
           <Field label="Phone" name="phone" value={form.phone} onChange={updateField} placeholder="01XXXXXXXXX" />
           <Field label="Location / city" name="location" value={form.location} onChange={updateField} />
           <Field label="Country" name="country" value={form.country} onChange={updateField} />
@@ -74,13 +74,13 @@ export default function RegisterPage() {
   );
 }
 
-type FieldProps = { label: string; name: string; value: string; placeholder?: string; onChange: (name: string, value: string) => void };
+type FieldProps = { label: string; name: string; value: string; placeholder?: string; type?: string; onChange: (name: string, value: string) => void };
 
-function Field({ label, name, value, placeholder, onChange }: FieldProps) {
+function Field({ label, name, value, placeholder, type = 'text', onChange }: FieldProps) {
   return (
     <div>
       <label htmlFor={name} className="mb-1 block text-sm font-semibold text-slate-700">{label}</label>
-      <input id={name} name={name} value={value} placeholder={placeholder} onChange={(event) => onChange(name, event.target.value)} className="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-blue-600" />
+      <input id={name} name={name} type={type} value={value} placeholder={placeholder} onChange={(event) => onChange(name, event.target.value)} className="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-blue-600" />
     </div>
   );
 }

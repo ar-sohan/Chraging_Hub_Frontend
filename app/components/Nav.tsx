@@ -1,6 +1,15 @@
+'use client';
+import { useRouter } from 'next/navigation';
 import Link from "next/link";
 
 export default function Nav() {
+    const router = useRouter();
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminId');
+        router.push('/admin/login');
+    };
     return (
         <>
             <div className="navbar bg-base-100 shadow-sm">
@@ -12,13 +21,13 @@ export default function Nav() {
                         <ul
                             tabIndex={-1}
                             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                            <li><a href="/admin/dashboard">Dashboard</a></li>
+                            <li><a href="../admin/dashboard">Dashboard</a></li>
                             <li>
                                 <a>User Management</a>
                                 <ul className="p-2">
-                                    <li><a href="/admin/manage_payments">Payments</a></li>
-                                    <li><a href="/admin/manage_bookings">Bookings</a></li>
-                                    <li><a href="/admin/manage_users">Users</a></li>
+                                    <li><a href="../admin/manage_payments">Payments</a></li>
+                                    <li><a href="../admin/manage_bookings">Bookings</a></li>
+                                    <li><a href="../admin/manage_user">Users</a></li>
                                 </ul>
                             </li>
                             <li><a>Technician</a></li>
@@ -29,23 +38,25 @@ export default function Nav() {
                 </div>
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1">
-                        <li><a href="/admin/dashboard">Dashboard</a></li>
+                        <li><a href="../admin/dashboard">Dashboard</a></li>
                         <li>
                             <details>
                                 <summary>User Management</summary>
                                 <ul className="p-2 bg-base-100 w-40 z-1">
-                                    <li><a href="/admin/manage_payments">Payments</a></li>
-                                    <li><a href="/admin/manage_bookings">Bookings</a></li>
-                                    <li><a href="/admin/manage_users">Users</a></li>
+                                    <li><a href="../admin/manage_payments">Payments</a></li>
+                                    <li><a href="../admin/manage_bookings">Bookings</a></li>
+                                    <li><a href="../admin/manage_user">Users</a></li>
                                 </ul>
                             </details>
                         </li>
-                        <li><a href="/admin/manage_technician">Technician</a></li>
-                        <li><a href="/admin/manage_garage">Garage</a></li>
+                        <li><a href="../admin/manage_technician">Technician</a></li>
+                        <li><a href="../admin/manage_garage">Garage</a></li>
                     </ul>
                 </div>
                 <div className="navbar-end">
-                    <a className="btn">Button</a>
+                    <button onClick={handleLogout} className="btn btn-sm bg-red-500 text-white">
+                        Logout
+                    </button>
                 </div>
             </div>
         </>

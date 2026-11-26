@@ -5,6 +5,7 @@ import { SetStateAction, useState, FormEvent } from 'react';
 import { z } from "zod";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 
 const loginAdminSchema = z.object({
@@ -22,7 +23,7 @@ type LoginAdminData = z.infer<typeof loginAdminSchema>;
 async function loginAdmin(data: LoginAdminData) {
   try {
     const response = await axios.post(
-      "http://localhost:3000/admin/login",
+      `${API_URL}/admin/login`,
       data
     );
 
@@ -65,10 +66,14 @@ export default function Login() {
       return;
     }
 
-    try {
+        try {
       const data = await loginAdmin(result.data);
 
-      console.log("Login successful:", data);
+      localStorage.setItem("adminToken", data.access_token);
+
+      // The login response carries the admin's own id (an email search could
+      // match a different admin whose address merely contains this one).
+      localStorage.setItem("adminId", String(data.adminId));
 
       setEmail("");
       setPassword("");

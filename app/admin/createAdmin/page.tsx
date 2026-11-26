@@ -4,6 +4,7 @@ import { z } from "zod";
 import axios from 'axios';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/config';
 
 const createAdminSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -32,7 +33,7 @@ type CreateAdminData = z.infer<typeof createAdminSchema>;
 async function createAdmin(data: CreateAdminData) {
   try {
     const response = await axios.post(
-      "http://localhost:3000/admin/create",
+      `${API_URL}/admin/create`,
       data
     );
 
