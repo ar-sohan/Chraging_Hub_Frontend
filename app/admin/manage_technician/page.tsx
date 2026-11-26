@@ -5,6 +5,7 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer';
 import { useEffect, useState, FormEvent } from 'react';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 type ManagedUser = {
   id: number;
@@ -27,7 +28,7 @@ export default function ManageTechnician() {
       const adminId = localStorage.getItem('adminId');
       const token = localStorage.getItem('adminToken');
       setLoading(true);
-      axios.get(`http://localhost:3000/admin/${adminId}/users`, {
+      axios.get(`${API_URL}/admin/${adminId}/users`, {
         params: { role: 'technician' },
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -45,7 +46,7 @@ export default function ManageTechnician() {
       const token = localStorage.getItem('adminToken');
 
       try {
-        await axios.post(`http://localhost:3000/admin/${adminId}/user`,
+        await axios.post(`${API_URL}/admin/${adminId}/user`,
           { name, email, role: 'technician' },
           { headers: { Authorization: `Bearer ${token}` } }
         );

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import BatteryIndicator from "./BatteryIndicator";
+import { API_URL } from '@/lib/config';
 
 type Session = { bookingId: number; slotNumber: string; status: string; percentage: number };
 type Booking = { id: number; slotNumber: string; status: string };
@@ -16,7 +17,7 @@ export default function ChargingStatus() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const base = API_URL;
 
   function handleError(cause: unknown) {
     if (axios.isAxiosError(cause) && cause.response?.status === 401) {

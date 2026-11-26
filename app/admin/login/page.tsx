@@ -5,6 +5,7 @@ import { SetStateAction, useState, FormEvent } from 'react';
 import { z } from "zod";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 
 const loginAdminSchema = z.object({
@@ -22,7 +23,7 @@ type LoginAdminData = z.infer<typeof loginAdminSchema>;
 async function loginAdmin(data: LoginAdminData) {
   try {
     const response = await axios.post(
-      "http://localhost:3000/admin/login",
+      `${API_URL}/admin/login`,
       data
     );
 
@@ -70,16 +71,9 @@ export default function Login() {
 
       localStorage.setItem("adminToken", data.access_token);
 
-      const adminRes = await axios.get("http://localhost:3000/admin", {
-        params: { email: result.data.email },
-        headers: { Authorization: `Bearer ${data.access_token}` },
-      });
-      const adminId = Array.isArray(adminRes.data)
-        ? adminRes.data[0].id
-        : adminRes.data.id;
-      localStorage.setItem("adminId", adminId);
-
-      console.log("Login successful:", data);
+      // The login response carries the admin's own id (an email search could
+      // match a different admin whose address merely contains this one).
+      localStorage.setItem("adminId", String(data.adminId));
 
       setEmail("");
       setPassword("");

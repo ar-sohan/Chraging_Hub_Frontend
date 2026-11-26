@@ -6,6 +6,7 @@ import Footer from '../../components/Footer';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Nav from '@/app/components/Nav';
+import { API_URL } from '@/lib/config';
 
 type ManagedUser = {
   id: number;
@@ -24,7 +25,7 @@ export default function ManageUser() {
       const adminId = localStorage.getItem('adminId');
       const token = localStorage.getItem('adminToken');
 
-      axios.get(`http://localhost:3000/admin/${adminId}/users`, {
+      axios.get(`${API_URL}/admin/${adminId}/users`, {
         params: { role: 'technician' },
         headers: { Authorization: `Bearer ${token}` },
       })

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Nav from '@/app/components/Nav';
 import Footer from '@/app/components/Footer';
+import { API_URL } from '@/lib/config';
 
 type ManagedUser = {
     id: number;
@@ -22,7 +23,7 @@ export default function GarageDetails() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
 
     const fetchUser = () => {
-        axios.get(`http://localhost:3000/admin/user/${id}`, {
+        axios.get(`${API_URL}/admin/user/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
         }).then(res => setUser(res.data));
     };
@@ -30,14 +31,14 @@ export default function GarageDetails() {
     useEffect(() => { fetchUser(); }, [id]);
 
     const handleApprove = async () => {
-        await axios.patch(`http://localhost:3000/admin/user/${id}/approve`, {}, {
+        await axios.patch(`${API_URL}/admin/user/${id}/approve`, {}, {
             headers: { Authorization: `Bearer ${token}` },
         });
         fetchUser();
     };
 
     const handleStatus = async (value: string) => {
-        await axios.patch(`http://localhost:3000/admin/user/${id}/status`, {}, {
+        await axios.patch(`${API_URL}/admin/user/${id}/status`, {}, {
             params: { value },
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,7 +46,7 @@ export default function GarageDetails() {
     };
 
     const handleDelete = async () => {
-        await axios.delete(`http://localhost:3000/admin/user/${id}`, {
+        await axios.delete(`${API_URL}/admin/user/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         router.push('/admin/manage_garage');

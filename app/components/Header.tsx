@@ -11,7 +11,11 @@ export default function Header() {
     const [toast, setToast] = useState('');
 
     useEffect(() => {
-        const pusher = new Pusher('YOUR_KEY', { cluster: 'YOUR_CLUSTER' });
+        const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
+        const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+        // Realtime toasts are optional: skip when Pusher isn't configured.
+        if (!key || !cluster) return;
+        const pusher = new Pusher(key, { cluster });
         const channel = pusher.subscribe('admin-channel');
 
         channel.bind('user-created', (data: { message: string }) => {
@@ -21,6 +25,7 @@ export default function Header() {
 
         return () => {
             pusher.unsubscribe('admin-channel');
+            pusher.disconnect();
         };
     }, []);
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { z } from "zod";
 import FormMessage from "./FormMessage";
+import { API_URL } from '@/lib/config';
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -32,7 +33,7 @@ export default function LoginForm() {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/user/login`,
+        `${API_URL}/user/login`,
         result.data
       );
       const data = response.data;

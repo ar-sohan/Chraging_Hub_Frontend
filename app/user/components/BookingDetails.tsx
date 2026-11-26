@@ -7,9 +7,10 @@ import Link from "next/link";
 import LoadingState from "./LoadingState";
 import StatusBadge from "./StatusBadge";
 import axios from "axios";
+import { API_URL } from '@/lib/config';
 
 type Booking = { id: number; slotNumber: string; status: string; bookingTime: string };
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const base = API_URL;
 const labels: Record<string, string> = {
   pending_payment: "Pending payment", confirmed: "Confirmed", cancelled: "Cancelled", completed: "Completed",
 };

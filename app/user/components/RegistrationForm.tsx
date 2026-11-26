@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { z } from "zod";
 import FormMessage from "./FormMessage";
+import { API_URL } from '@/lib/config';
 
 const registrationSchema = z.object({
   fullName: z.string().min(3, "Name must be at least 3 characters"),
@@ -39,7 +40,7 @@ export default function RegistrationForm() {
     const { confirmPassword, ...user } = result.data;
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/user/register`,
+        `${API_URL}/user/register`,
         user
       );
       setIsError(false);

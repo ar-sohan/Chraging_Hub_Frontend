@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 export default function LandingLogin() {
   const [email, setEmail] = useState('');
@@ -14,14 +15,11 @@ export default function LandingLogin() {
   const handleLogin = async () => {
     setError('');
     try {
-      const res = await axios.post('http://localhost:3000/admin/login', { email, password });
+      const res = await axios.post(`${API_URL}/admin/login`, { email, password });
       localStorage.setItem('adminToken', res.data.access_token);
-      const adminRes = await axios.get('http://localhost:3000/admin', {
-        params: { email },
-        headers: { Authorization: `Bearer ${res.data.access_token}` },
-      });
-      const adminId = Array.isArray(adminRes.data) ? adminRes.data[0].id : adminRes.data.id;
-      localStorage.setItem('adminId', adminId);
+      // The login response carries the admin's own id (an email search could
+      // match a different admin whose address merely contains this one).
+      localStorage.setItem('adminId', String(res.data.adminId));
       router.push('/admin/dashboard');
     } catch {
       setError('Invalid email or password');

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 type Admin = {
     id: number;
@@ -18,7 +19,7 @@ export default function Profile() {
         const adminId = localStorage.getItem('adminId');
         const token = localStorage.getItem('adminToken');
 
-        axios.get(`http://localhost:3000/admin/${adminId}`, {
+        axios.get(`${API_URL}/admin/${adminId}`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then(res => setAdmin(res.data))

@@ -9,6 +9,7 @@ import axios from "axios";
 import Link from "next/link";
 import LoadingState from "./LoadingState";
 import StatusBadge from "./StatusBadge";
+import { API_URL } from '@/lib/config';
 
 type Booking = { id: number; slotNumber: string; status: string; bookingTime: string };
 type Slot = { slotNumber: string; available: boolean };
@@ -30,7 +31,7 @@ export default function DashboardSummary({ name, onUnauthorized }: {
     const controller = new AbortController();
     const token = localStorage.getItem("accessToken");
     if (!token) { onUnauthorized(); return; }
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const base = API_URL;
     const config = { headers: { Authorization: "Bearer " + token }, signal: controller.signal };
     Promise.all([
       axios.get<Booking[]>(base + "/user/bookings", config),

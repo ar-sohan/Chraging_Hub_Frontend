@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import { z } from "zod";
+import { API_URL } from '@/lib/config';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, "Current password must be at least 6 characters").max(20, "Current password must be at most 20 characters"),
@@ -33,7 +34,7 @@ export default function ChangePasswordForm({ userId, onUnauthorized }: {
     setBusy(true);
     try {
       await axios.patch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") + "/user/" + userId + "/password",
+        API_URL + "/user/" + userId + "/password",
         { currentPassword: result.data.currentPassword, password: result.data.password },
         { headers: { Authorization: "Bearer " + token } },
       );

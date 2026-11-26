@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
+import { API_URL } from '@/lib/config';
 
 
 export type CurrentUser = {
@@ -56,7 +57,7 @@ export default function ProtectedUserPage({
 
     window.addEventListener("storage", handleStorage);
     axios.get<CurrentUser>(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/user/me`,
+      `${API_URL}/user/me`,
       {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,

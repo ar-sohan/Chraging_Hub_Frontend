@@ -11,6 +11,7 @@ import Link from "next/link";
 import LoadingState from "./LoadingState";
 import StatusBadge from "./StatusBadge";
 import { z } from "zod";
+import { API_URL } from '@/lib/config';
 
 type Station = { id: string; name: string; area: string; block: string; road: string; house: string };
 type Slot = { slotNumber: string; available: boolean; station: Station };
@@ -19,7 +20,7 @@ const slotSchema = z.string().trim().toUpperCase().regex(
   /^A-[1-9][0-9]*$/,
   "Invalid slot identifier. Select a slot from the list."
 );
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const apiUrl = API_URL;
 const statusLabels: Record<string, string> = {
   pending_payment: "Pending payment", confirmed: "Confirmed",
   cancelled: "Cancelled", completed: "Completed",

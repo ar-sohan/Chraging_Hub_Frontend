@@ -49,7 +49,7 @@ export default function LoginPage() {
           </div>
           <div>
             <label htmlFor="password" className="mb-1 block text-sm font-semibold text-slate-700">Password</label>
-            <input id="password" name="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-blue-600" />
+            <input id="password" name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-blue-600" />
           </div>
           {error && <p className="rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
           {message && <p className="rounded bg-amber-50 p-3 text-sm text-amber-800">{message}</p>}

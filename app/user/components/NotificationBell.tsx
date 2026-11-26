@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Pusher from "pusher-js";
 import Link from "next/link";
+import { API_URL } from '@/lib/config';
 
 type Notice = { id: number; bookingId: number; title: string; message: string; read: boolean; createdAt: string };
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const base = API_URL;
 
 export default function NotificationBell({ userId, onUnauthorized }: {
   userId: number; onUnauthorized?: () => void;

@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import { z } from "zod";
 import type { CurrentUser } from "./ProtectedUserPage";
+import { API_URL } from '@/lib/config';
 
 const schema = z.object({
   fullName: z.string().trim().min(3, "Name must have at least 3 characters").max(100),
@@ -40,7 +41,7 @@ export default function ProfileDetails({ user, onSaved, onUnauthorized }: {
     setSaving(true);
     try {
       const { data } = await axios.put<CurrentUser>(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/user/${user.id}`,
+        `${API_URL}/user/${user.id}`,
         parsed.data,
         { headers: { Authorization: `Bearer ${token}` } }
       );

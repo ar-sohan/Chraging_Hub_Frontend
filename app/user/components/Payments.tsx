@@ -5,12 +5,13 @@ import axios from "axios";
 import Link from "next/link";
 import LoadingState from "./LoadingState";
 import StatusBadge from "./StatusBadge";
+import { API_URL } from '@/lib/config';
 
 type Booking = { id: number; slotNumber: string; status: string };
 type Quote = { booking: Booking; amount: number; currency: string; demo: boolean };
 type Payment = { id: number; amount: number | string; status: string; paymentMethod: string;
   transactionId: string; paidAt?: string; paymentDate: string; booking: Booking; emailStatus?: string; notification?: { id: number; bookingId: number; title: string; message: string; read: boolean; createdAt: string } };
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const base = API_URL;
 
 export default function Payments({ bookingId, onUnauthorized }: {
   bookingId?: string; onUnauthorized: () => void;
