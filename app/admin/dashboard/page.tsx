@@ -11,7 +11,6 @@ export default function(){
                     <h1 className="text-2xl font-bold">Welcome Name to the Dashboard</h1>
                 </div>
             </div>
-
             <Footer></Footer> 
         </>
     )
